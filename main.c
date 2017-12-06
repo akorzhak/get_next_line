@@ -1,32 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akorzhak <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/11/29 14:49:06 by akorzhak          #+#    #+#             */
-/*   Updated: 2017/11/29 14:49:09 by akorzhak         ###   ########.fr       */
+/*   Created: 2017/12/06 12:36:32 by akorzhak          #+#    #+#             */
+/*   Updated: 2017/12/06 12:37:02 by akorzhak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
-
-# include "libft/libft.h"
-# include <fcntl.h>
-
-# define BUFF_SIZE 32
-
-typedef struct		s_dlist
+#include "get_next_line.h"
+#include <stdio.h>
+int		main(int argc, char **argv)
 {
-	char			*buff;
-	int				fd;	
-	struct s_dlist	*next;
-	struct s_dlist	*prev;
-}					t_dlist;
-
-int		get_next_line(const int fd, char **line);
-int		main(int argc, char **argv);
-
-#endif
+	char	*line;
+	get_next_line(open(argv[1], O_RDONLY), &line);
+	printf("%s\n", line);
+	return (0);
+}
