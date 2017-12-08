@@ -24,31 +24,26 @@ void	*ft_realloc(void *arr, size_t size)
 	if (arr)
 	{
 		if (ft_strlen(arr) > size)
-  		 ft_memcpy(new, arr, size);
+  			ft_memcpy(new, arr, size);
   		else
-  		 ft_memcpy(new, arr, ft_strlen(arr));
+  			ft_memcpy(new, arr, ft_strlen(arr));
  		free(arr);
 	}
  	return (new);
-}
+} 
 
-int		get_line(int fd, char *buff, char *line, int c)
+int		get_line(char *buff, char **line)
 {
 	size_t i;
 	char  *n;
 
-	if (!*buff || ft_strlen(buff) < BUFF_SIZE) //??? return (line)?
-	{
-		if (!(line = ft_strjoin(line, buff)))
-			return (-1);
-    //free(line);
-		return (0);
-	}
-	n = ft_memchr(buff, '\n', BUFF_SIZE);
+	if (!buff)
+		return (1);
+	n = ft_memchr(buff, '\n', ft_strlen(buff));
 	i = n - buff;
-	if (!(line = ft_realloc(line, (ft_strlen(line) + i + 1))))
+	if (!(*line = ft_realloc(*line, (ft_strlen(*line) + i + 1))))
 		return (-1);
-	ft_strncat(line, buff, i);
+	ft_strncat(*line, buff, i);
 	ft_bzero(buff, i + 1);
 	ft_memmove(buff, n, ft_strlen(n));
 	return (1);
@@ -58,8 +53,6 @@ t_dlist		*get_list(int fd, t_dlist *list, char flag)
 {
 	t_dlist *new;
 
-	//printf("%c\n", flag);
-//	printf("--%d\n", fd);
 	while (list && list->prev && flag == '-')
 		list = list->prev;
 	if (!list || flag == '+')
@@ -67,16 +60,12 @@ t_dlist		*get_list(int fd, t_dlist *list, char flag)
 		if ((new = (t_dlist *)ft_memalloc(sizeof(t_dlist))) == 0)
 			return (0);
 		new->fd = fd;
-		//printf("!!\n");
-		//printf("%d\n", new->fd);
 		new->buff = ft_strnew(BUFF_SIZE);
-		new->buff = "Hello";
-		//printf("%s\n", new->buff);
 		new->next = 0;
 		new->prev = list;
+		(list) ? (list->next = new) : 0;
 		return (new);
 	}
-	//printf("dfgdf\n");
 	while (list->fd != fd && list->next)
 		list = list->next;
 	if (list->fd == fd)
@@ -90,37 +79,28 @@ int  get_next_line(const int fd, char **line)
 	char   flag;
 	int    c;
 
-	flag = '-';
-//	printf("%c\n", flag);
+	flag = '-'; 
 	if (BUFF_SIZE < 1 || fd == -1 || !line)
 		return (-1);
 	if (!(list = get_list(fd, list, flag)))
     	return (-1);
-  //  printf("%c\n", flag);
-	if (*(list->buff) && !ft_memchr(list->buff, '\n', BUFF_SIZE))
+	if ((list->buff) && !ft_memchr(list->buff, '\n', ft_strlen(list->buff)))
 	{
-//		printf("%c\n", flag);
 		*line = ft_strnew(ft_strlen(list->buff));
-		*line = "Hello";
 		ft_strcpy(*line, list->buff);
 	}
-	else if (!(*(list->buff)))
+	else if (!list->buff)
 		*line = ft_strnew(BUFF_SIZE);
-//	printf("%c\n", flag);
 	while (!ft_memchr(list->buff, '\n', BUFF_SIZE))
 	{
 		if ((c = read(fd, list->buff, BUFF_SIZE)) == -1)
-			return (-1); //to add list->buff[BUFF_SIZE] = '\0';
-		if (!ft_memchr(list->buff, '\n', BUFF_SIZE))
+			return (-1); 
+		if (!ft_memchr(list->buff, '\n', BUFF_SIZE)) //ft_strlen(buff)
     	{
-			if (!(line = ft_realloc(*line, (ft_strlen(*line) + c + 1))))
+			if (!(*line = ft_realloc(*line, (ft_strlen(*line) + c + 1))))
 	 			return (-1);
 			ft_strcat(*line, list->buff);
-	//  if ((line = ft_strjoin(line, list->buff)) == 0)
-      //  return (-1);
-		//	if (c < BUFF_SIZE)
-      //break ;
-		}
+		} 
 	}
-	return (get_line(fd, list->buff, *line, c));
+	return (get_line(list->buff, line));
 }

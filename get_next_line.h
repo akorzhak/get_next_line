@@ -27,6 +27,6 @@ typedef struct		s_dlist
 }					t_dlist;
 
 int		get_next_line(const int fd, char **line);
-int		main(int argc, char **argv);
+//int		main(int argc, char **argv);
 
 #endif
