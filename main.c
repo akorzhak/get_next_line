@@ -15,8 +15,21 @@
 int		main(int argc, char **argv)
 {
 	char	*line;
-	get_next_line(open(argv[1], O_RDONLY), &line);
+	int		f;
+
+	f = open(argv[1], O_RDONLY);
+	get_next_line(f, &line);
 	printf("%s\n", line);
-	system("leaks a.out");
+	get_next_line(f, &line);
+	printf("%s\n", line);
+	get_next_line(f, &line);
+	printf("%s\n", line);
+	get_next_line(f, &line);
+	printf("%s\n", line);
+	get_next_line(f, &line);
+	printf("%s\n", line);
+	get_next_line(f, &line);
+	printf("%s\n", line);
+//	system("leaks a.out");
 	return (0);
 }

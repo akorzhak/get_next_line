@@ -38,14 +38,27 @@ int		get_line(char *buff, char **line)
 	char  *n;
 
 	if (!buff)
-		return (1);
+	{
+		free(buff);
+		free(*line);
+		return (0);
+	}
 	n = ft_memchr(buff, '\n', ft_strlen(buff));
 	i = n - buff;
+//	printf("%lu\n", i);
 	if (!(*line = ft_realloc(*line, (ft_strlen(*line) + i + 1))))
 		return (-1);
 	ft_strncat(*line, buff, i);
-	ft_bzero(buff, i + 1);
-	ft_memmove(buff, n, ft_strlen(n));
+//	printf("%s\n", *line);
+//	printf("%s\n", buff);
+//	printf("BUFFER: %s\n", buff);	
+	ft_bzero(buff, ++i);
+//	printf("%s\n", buff);	
+	ft_memmove(buff, n + 1, ft_strlen(n + 1));
+//	printf("BUFFER1: %s\n", buff);	
+	ft_bzero(&buff[ft_strlen(buff) - i], ft_strlen(buff) - ft_strlen(&buff[ft_strlen(buff) - i])); // ????
+//	printf("%s\n", list->buff);
+//	printf("BUFFER2: %s\n", buff);
 	return (1);
 }
 
@@ -75,32 +88,30 @@ t_dlist		*get_list(int fd, t_dlist *list, char flag)
 
 int  get_next_line(const int fd, char **line)
 {
-	static t_dlist *list = 0;
-	char   flag;
-	int    c;
+	static t_dlist	*list;
+	int				c;
 
-	flag = '-'; 
 	if (BUFF_SIZE < 1 || fd == -1 || !line)
 		return (-1);
-	if (!(list = get_list(fd, list, flag)))
-    	return (-1);
+	if (!(list = get_list(fd, list, '-')))
+		return (-1);
 	if ((list->buff) && !ft_memchr(list->buff, '\n', ft_strlen(list->buff)))
 	{
 		*line = ft_strnew(ft_strlen(list->buff));
 		ft_strcpy(*line, list->buff);
 	}
-	else if (!list->buff)
+	else //if (!list->buff)
 		*line = ft_strnew(BUFF_SIZE);
 	while (!ft_memchr(list->buff, '\n', BUFF_SIZE))
 	{
 		if ((c = read(fd, list->buff, BUFF_SIZE)) == -1)
-			return (-1); 
+			return (-1);
 		if (!ft_memchr(list->buff, '\n', BUFF_SIZE)) //ft_strlen(buff)
     	{
 			if (!(*line = ft_realloc(*line, (ft_strlen(*line) + c + 1))))
 	 			return (-1);
 			ft_strcat(*line, list->buff);
-		} 
+		}
 	}
 	return (get_line(list->buff, line));
 }

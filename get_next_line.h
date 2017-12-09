@@ -14,9 +14,9 @@
 # define GET_NEXT_LINE_H
 
 # include "libft/libft.h"
-# include <fcntl.h>
+# include <fcntl.h> //for main (open)
 
-# define BUFF_SIZE 32
+# define BUFF_SIZE 100000
 
 typedef struct		s_dlist
 {
