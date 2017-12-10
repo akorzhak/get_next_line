@@ -34,31 +34,44 @@ void	*ft_realloc(void *arr, size_t size)
 
 int		get_line(char *buff, char **line)
 {
+//	static int		b = 1;
 	size_t i;
 	char  *n;
 
-	if (!buff)
+	if (!*buff)
 	{
-		free(buff);
-		free(*line);
+	//	free(buff);
+	//	free(*line);
 		return (0);
 	}
 	n = ft_memchr(buff, '\n', ft_strlen(buff));
+	if (!n)
+	{
+		ft_bzero(buff, BUFF_SIZE + 1);
+		return (1);
+	}
 	i = n - buff;
 //	printf("%lu\n", i);
 	if (!(*line = ft_realloc(*line, (ft_strlen(*line) + i + 1))))
 		return (-1);
 	ft_strncat(*line, buff, i);
-//	printf("%s\n", *line);
+//	printf("%d\n\n", b++);	
+//	printf("BUFFER1: %s\n\n", buff);	
 //	printf("%s\n", buff);
-//	printf("BUFFER: %s\n", buff);	
+//	printf("LINE1: %s\n", *line);
 	ft_bzero(buff, ++i);
 //	printf("%s\n", buff);	
 	ft_memmove(buff, n + 1, ft_strlen(n + 1));
-//	printf("BUFFER1: %s\n", buff);	
-	ft_bzero(&buff[ft_strlen(buff) - i], ft_strlen(buff) - ft_strlen(&buff[ft_strlen(buff) - i])); // ????
-//	printf("%s\n", list->buff);
-//	printf("BUFFER2: %s\n", buff);
+//	printf("BUFFER2: %s\n\n", buff);
+//	printf("LINE2: %s\n", *line);
+	//ft_bzero(&buff[ft_strlen(buff) - i], ft_strlen(buff) - ft_strlen(&buff[ft_strlen(buff) - i])); // ????
+	//ft_bzero(&buff[ft_strlen(buff) - i], i);
+//	ft_bzero(buff + ft_strlen(n), BUFF_SIZE - ft_strlen(n));
+	if (ft_strlen(*line) < ft_strlen(buff))
+		ft_bzero(&buff[ft_strlen(buff) - ft_strlen(*line) - 1], ft_strlen(*line));
+///	printf("%s\n", list->buff);
+//	printf("BUFFER3: %s\n", buff);
+//	printf("LINE3: %s\n", *line);
 	return (1);
 }
 

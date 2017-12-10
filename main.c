@@ -18,17 +18,17 @@ int		main(int argc, char **argv)
 	int		f;
 
 	f = open(argv[1], O_RDONLY);
-	get_next_line(f, &line);
+	printf("1%d\n", get_next_line(f, &line));
 	printf("%s\n", line);
-	get_next_line(f, &line);
+	printf("1%d\n", get_next_line(f, &line));
 	printf("%s\n", line);
-	get_next_line(f, &line);
+	printf("1%d\n", get_next_line(f, &line));
 	printf("%s\n", line);
-	get_next_line(f, &line);
+	printf("1%d\n", get_next_line(f, &line));
 	printf("%s\n", line);
-	get_next_line(f, &line);
+	printf("0%d\n", get_next_line(f, &line));
 	printf("%s\n", line);
-	get_next_line(f, &line);
+	printf("0%d\n", get_next_line(f, &line));
 	printf("%s\n", line);
 //	system("leaks a.out");
 	return (0);
