@@ -11,11 +11,10 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
-void	*ft_realloc(void *arr, size_t size)
+void				*ft_realloc(void *arr, size_t size)
 {
-	void *new;
+	void			*new;
 
 	if ((ft_strlen(arr) + 1) == size)
 		return (arr);
@@ -24,62 +23,65 @@ void	*ft_realloc(void *arr, size_t size)
 	if (arr)
 	{
 		if (ft_strlen(arr) > size)
-  			ft_memcpy(new, arr, size - 1);
-  		else
-  			ft_memcpy(new, arr, ft_strlen(arr));
- 		free(arr);
+			ft_memcpy(new, arr, size - 1);
+		else
+			ft_memcpy(new, arr, ft_strlen(arr));
+		free(arr);
 	}
- 	return (new);
-} 
+	return (new);
+}
 
-int		get_line(char *buff, char **line)
+int					get_line(char *buff, char **line)
 {
-//	static int		b = 1;
-	size_t i;
-	size_t len;
-	char  *n;
+	size_t			i;
+	size_t			len;
+	char			*n;
 
-	if (!*buff)
-	{
-	//	free(buff);
-		free(*line);
-		return (0);
-	}
 	n = ft_memchr(buff, '\n', ft_strlen(buff));
-	if (!n)
-	{
-		ft_bzero(buff, ft_strlen(buff));
-		return (1);
-	}
 	i = n - buff;
-//	printf("%lu\n", i);
 	if (!(*line = ft_realloc(*line, (ft_strlen(*line) + i + 1))))
 		return (-1);
 	ft_strncat(*line, buff, i);
-//	printf("%d\n\n", b++);	
-//	printf("BUFFER1: %s\n\n", buff);	
-//	printf("%s\n", buff);s
-//	printf("LINE1: %s\n", *line);
 	len = ft_strlen(buff);
 	ft_bzero(buff, ++i);
-//	printf("%s\n", buff);	
-	ft_memmove(buff, n + 1, ft_strlen(n + 1));
-//	printf("BUFFER2: %s\n\n", buff);
-//	printf("LINE2: %s\n", *line);
-	//ft_bzero(&buff[ft_strlen(buff) - i], ft_strlen(buff) - ft_strlen(&buff[ft_strlen(buff) - i])); // ????
-	//ft_bzero(&buff[ft_strlen(buff) - i], i);
-//	ft_bzero(buff + ft_strlen(n), BUFF_SIZE - ft_strlen(n));
-//	if (ft_strlen(*line) < ft_strlen(buff))
-	ft_bzero(&buff[len - (n + 1 - buff)], (n + 1) - buff);
-///	printf("%s\n", list->buff);
-//	printf("BUFFER3: %s\n", buff);
-//	printf("LINE3: %s\n", *line);
+	n++;
+	ft_memmove(buff, n, ft_strlen(n));
+	ft_bzero(&buff[len - i], i);
 	return (1);
 }
 
-t_dlist		*get_list(int fd, t_dlist *list, char flag)
+int					read_write(int fd, char *buff, char **line)
 {
-	t_dlist *new;
+	int				c;
+
+	while (!ft_memchr(buff, '\n', BUFF_SIZE))
+	{
+		ft_bzero(buff, ft_strlen(buff));
+		if ((c = read(fd, buff, BUFF_SIZE)) == -1)
+			return (-1);
+		if (!c)
+		{
+			ft_memdel((void **)buff);
+			if (!**line)
+			{
+				ft_memdel((void **)line);
+				return (0);
+			}
+			return (1);
+		}
+		if (!ft_memchr(buff, '\n', BUFF_SIZE))
+		{
+			if (!(*line = ft_realloc(*line, (ft_strlen(*line) + c + 1))))
+				return (-1);
+			ft_strcat(*line, buff);
+		}
+	}
+	return ('+');
+}
+
+t_dlist				*get_list(int fd, t_dlist *list, int flag)
+{
+	t_dlist			*new;
 
 	while (list && list->prev && flag == '-')
 		list = list->prev;
@@ -98,13 +100,13 @@ t_dlist		*get_list(int fd, t_dlist *list, char flag)
 		list = list->next;
 	if (list->fd == fd)
 		return (list);
-	return (get_list(fd, list, '+')); //if fd wasn't found, pass the last el
+	return (get_list(fd, list, '+'));
 }
 
-int  get_next_line(const int fd, char **line)
+int					get_next_line(const int fd, char **line)
 {
 	static t_dlist	*list = 0;
-	int				c; //size_t .....
+	int				ret;
 
 	if (BUFF_SIZE < 1 || fd == -1 || !line)
 		return (-1);
@@ -115,29 +117,10 @@ int  get_next_line(const int fd, char **line)
 		*line = ft_strnew(ft_strlen(list->buff));
 		ft_strcpy(*line, list->buff);
 	}
-	else //if (!list->buff)
-		*line = ft_strnew(1); //buf size
-	while (!ft_memchr(list->buff, '\n', BUFF_SIZE)) //ft_strlen(list->buff)
-	{
-		if ((c = read(fd, list->buff, BUFF_SIZE)) == -1)
-			return (-1);
-		if (!c && list->buff && *line)
-		{
-			ft_bzero(list->buff, ft_strlen(list->buff));
-			return (1);
-		}
-		if ((!c) && (!*(list->buff)) && (!**line))
-		{
-			free(list);
-			free(*line);
-			return (0);
-		}
-		if (!ft_memchr(list->buff, '\n', BUFF_SIZE)) //ft_strlen(buff)
-    	{
-			if (!(*line = ft_realloc(*line, (ft_strlen(*line) + c + 1))))
-	 			return (-1);
-			ft_strcat(*line, list->buff);
-		}
-	}
+	else
+		*line = ft_strnew(1);
+	ret = read_write(fd, list->buff, line);
+	if (ret != '+')
+		return (ret);
 	return (get_line(list->buff, line));
 }
