@@ -59,15 +59,15 @@ int					read_write(int fd, char *buff, char **line)
 		ft_bzero(buff, ft_strlen(buff));
 		if ((c = read(fd, buff, BUFF_SIZE)) == -1)
 			return (-1);
-		if (!c)
+		if (!c && **line)
 		{
-			ft_memdel((void **)buff);
-			if (!**line)
-			{
-				ft_memdel((void **)line);
-				return (0);
-			}
+			ft_bzero(buff, ft_strlen(buff));
 			return (1);
+		}
+		if (!c && !**line)
+		{
+			ft_strdel(line);
+			return (0);
 		}
 		if (!ft_memchr(buff, '\n', BUFF_SIZE))
 		{
