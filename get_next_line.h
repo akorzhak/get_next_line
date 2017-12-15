@@ -16,7 +16,7 @@
 # include "libft/libft.h"
 # include <fcntl.h> //for main (open)
 
-# define BUFF_SIZE 16
+# define BUFF_SIZE 8
 
 typedef struct		s_dlist
 {

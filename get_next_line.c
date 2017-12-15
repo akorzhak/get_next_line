@@ -27,6 +27,7 @@ void				*ft_realloc(void *arr, size_t size)
 		else
 			ft_memcpy(new, arr, ft_strlen(arr));
 		free(arr);
+		arr = 0;
 	}
 	return (new);
 }
